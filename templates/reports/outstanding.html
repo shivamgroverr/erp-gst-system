@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ party_type }} Outstanding{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5><i class="bi bi-person-exclamation"></i> {{ party_type }} Outstanding — {{ fy }}</h5>
+  <div class="btn-group btn-group-sm">
+    <a href="{{ url_for('reports.outstanding', type='Debtor') }}"  class="btn {{ 'btn-primary' if party_type=='Debtor' else 'btn-outline-primary' }}">Debtors</a>
+    <a href="{{ url_for('reports.outstanding', type='Creditor') }}" class="btn {{ 'btn-primary' if party_type=='Creditor' else 'btn-outline-primary' }}">Creditors</a>
+    <a href="?type={{ party_type }}&export=excel" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+    <a href="?type={{ party_type }}&export=pdf"   class="btn btn-danger"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+  </div>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card text-center bg-primary text-white shadow-sm">
+    <div class="card-body py-2"><div class="small">Total Parties</div>
+      <div class="fs-4 fw-bold">{{ data|length }}</div></div></div></div>
+  <div class="col-md-4"><div class="card text-center bg-warning shadow-sm">
+    <div class="card-body py-2"><div class="small">Total Billed</div>
+      <div class="fs-4 fw-bold">₹{{ "{:,.0f}".format(data|sum(attribute='billed')) }}</div></div></div></div>
+  <div class="col-md-4"><div class="card text-center bg-danger text-white shadow-sm">
+    <div class="card-body py-2"><div class="small">Total Pending</div>
+      <div class="fs-4 fw-bold">₹{{ "{:,.0f}".format(data|sum(attribute='pending')) }}</div></div></div></div>
+</div>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+      <thead class="table-dark">
+        <tr><th>#</th><th>Party Name</th><th>GSTIN</th><th>Phone</th>
+            <th class="text-end">Billed (₹)</th><th class="text-end">Paid (₹)</th>
+            <th class="text-end">Pending (₹)</th><th class="no-print">Action</th></tr>
+      </thead>
+      <tbody>
+        {% for d in data %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><a href="{{ url_for('parties.view', party_id=d.id) }}">{{ d.name }}</a></td>
+          <td><code>{{ d.gstin or "—" }}</code></td>
+          <td>{{ d.phone or "—" }}</td>
+          <td class="text-end">{{ "{:,.2f}".format(d.billed) }}</td>
+          <td class="text-end text-success">{{ "{:,.2f}".format(d.paid) }}</td>
+          <td class="text-end fw-bold text-danger">{{ "{:,.2f}".format(d.pending) }}</td>
+          <td class="no-print">
+            <a href="{{ url_for('payments.create', party_id=d.id) }}" class="btn btn-xs btn-outline-success">
+              <i class="bi bi-plus-circle"></i> Receive
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="text-center text-muted py-4">No pending dues! ✅</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
