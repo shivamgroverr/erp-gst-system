@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Stock Summary{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5><i class="bi bi-bag-check"></i> Stock Summary — {{ fy }}</h5>
+  <div class="btn-group btn-group-sm">
+    <a href="?export=excel" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+    <a href="?export=pdf"   class="btn btn-danger"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+    <button onclick="window.print()" class="btn btn-secondary no-print"><i class="bi bi-printer"></i></button>
+  </div>
+</div>
+<div class="card mb-3 no-print">
+  <div class="card-body py-2">
+    <form method="GET" class="row g-2 align-items-center">
+      <div class="col-md-4">
+        <input type="text" name="q" value="{{ q }}" class="form-control form-control-sm"
+               placeholder="🔍 Search item name...">
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary btn-sm w-100">Filter</button>
+      </div>
+    </form>
+  </div>
+</div>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+      <thead class="table-dark">
+        <tr><th>#</th><th>Item Name</th><th>Unit</th>
+            <th class="text-end">In Qty</th><th class="text-end">Out Qty</th>
+            <th class="text-end">Closing Qty</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for d in data %}
+        <tr class="{{ 'table-danger' if d.status=='Low' else '' }}">
+          <td>{{ loop.index }}</td>
+          <td><a href="{{ url_for('stock.ledger', item_id=d.id) }}">{{ d.name }}</a></td>
+          <td>{{ d.unit }}</td>
+          <td class="text-end">{{ "{:,.3f}".format(d.in_qty) }}</td>
+          <td class="text-end">{{ "{:,.3f}".format(d.out_qty) }}</td>
+          <td class="text-end fw-bold">{{ "{:,.3f}".format(d.closing) }}</td>
+          <td>
+            <span class="badge bg-{{ 'danger' if d.status=='Low' else 'success' if d.status=='OK' else 'warning text-dark' }}">
+              {{ d.status }}
+            </span>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">No stock data found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
