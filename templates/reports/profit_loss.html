@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Profit & Loss{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5><i class="bi bi-bar-chart-line"></i> Profit & Loss Account — {{ fy }}</h5>
+  <div class="btn-group btn-group-sm">
+    <a href="?export=excel" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+    <a href="?export=pdf"   class="btn btn-danger"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+    <button onclick="window.print()" class="btn btn-secondary no-print"><i class="bi bi-printer"></i></button>
+  </div>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-md-4"><div class="card text-center bg-success text-white shadow-sm">
+    <div class="card-body py-2"><div class="small">Total Income</div>
+      <div class="fs-4 fw-bold">₹{{ "{:,.2f}".format(total_income) }}</div></div></div></div>
+  <div class="col-md-4"><div class="card text-center bg-danger text-white shadow-sm">
+    <div class="card-body py-2"><div class="small">Total Expenditure</div>
+      <div class="fs-4 fw-bold">₹{{ "{:,.2f}".format(total_expense) }}</div></div></div></div>
+  <div class="col-md-4"><div class="card text-center {{ 'bg-success' if net_profit >= 0 else 'bg-danger' }} text-white shadow-sm">
+    <div class="card-body py-2">
+      <div class="small">{{ 'Net Profit' if net_profit >= 0 else 'Net Loss' }}</div>
+      <div class="fs-4 fw-bold">₹{{ "{:,.2f}".format(net_profit|abs) }}</div>
+    </div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white"><strong>Income</strong></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead class="table-secondary"><tr><th>Head</th><th class="text-end">Amount (₹)</th></tr></thead>
+          <tbody>
+            {% for k, v in income_data.items() %}
+            <tr><td>{{ k }}</td><td class="text-end">{{ "{:,.2f}".format(v) }}</td></tr>
+            {% endfor %}
+          </tbody>
+          <tfoot class="fw-bold table-success">
+            <tr><td>TOTAL INCOME</td><td class="text-end">₹{{ "{:,.2f}".format(total_income) }}</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header bg-danger text-white"><strong>Expenditure</strong></div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead class="table-secondary"><tr><th>Head</th><th class="text-end">Amount (₹)</th></tr></thead>
+          <tbody>
+            {% for k, v in expense_data.items() %}
+            <tr><td>{{ k }}</td><td class="text-end">{{ "{:,.2f}".format(v) }}</td></tr>
+            {% endfor %}
+          </tbody>
+          <tfoot class="fw-bold table-danger">
+            <tr><td>TOTAL EXPENDITURE</td><td class="text-end">₹{{ "{:,.2f}".format(total_expense) }}</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="card mt-3 border-{{ 'success' if net_profit >= 0 else 'danger' }} shadow-sm">
+  <div class="card-body text-center py-3">
+    <h5 class="text-{{ 'success' if net_profit >= 0 else 'danger' }}">
+      {{ '🟢 NET PROFIT' if net_profit >= 0 else '🔴 NET LOSS' }} —
+      ₹{{ "{:,.2f}".format(net_profit|abs) }}
+    </h5>
+  </div>
+</div>
+{% endblock %}
