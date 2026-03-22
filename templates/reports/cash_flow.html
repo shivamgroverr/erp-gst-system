@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Cash Flow{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5><i class="bi bi-cash-stack"></i> Cash Flow Statement — {{ fy }}</h5>
+  <div class="btn-group btn-group-sm">
+    <a href="?export=excel" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+    <a href="?export=pdf"   class="btn btn-danger"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+    <button onclick="window.print()" class="btn btn-secondary no-print"><i class="bi bi-printer"></i></button>
+  </div>
+</div>
+<div class="card shadow-sm">
+  <div class="card-body p-0">
+    <table class="table table-sm mb-0">
+      <thead class="table-dark"><tr><th>Activity</th><th class="text-end">Amount (₹)</th></tr></thead>
+      <tbody>
+        <tr class="table-primary"><td colspan="2" class="fw-bold">A. Operating Activities</td></tr>
+        <tr><td class="ps-4">Net Operating Cash Flow</td>
+            <td class="text-end fw-bold {{ 'text-success' if operating >= 0 else 'text-danger' }}">
+              {{ "{:,.2f}".format(operating) }}</td></tr>
+        <tr class="table-primary"><td colspan="2" class="fw-bold">B. Investing Activities</td></tr>
+        <tr><td class="ps-4">Net Investing Cash Flow</td>
+            <td class="text-end fw-bold {{ 'text-success' if investing >= 0 else 'text-danger' }}">
+              {{ "{:,.2f}".format(investing) }}</td></tr>
+        <tr class="table-primary"><td colspan="2" class="fw-bold">C. Financing Activities</td></tr>
+        <tr><td class="ps-4">Net Financing Cash Flow</td>
+            <td class="text-end fw-bold {{ 'text-success' if financing >= 0 else 'text-danger' }}">
+              {{ "{:,.2f}".format(financing) }}</td></tr>
+      </tbody>
+      <tfoot class="table-dark fw-bold">
+        <tr>
+          <td>NET CASH FLOW (A+B+C)</td>
+          <td class="text-end {{ 'text-success' if net_cash >= 0 else 'text-danger' }}">
+            ₹{{ "{:,.2f}".format(net_cash) }}
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+{% endblock %}
